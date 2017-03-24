@@ -29,6 +29,20 @@ public class Reflection {
         }
         return null;
     }
+    
+    public static void setField(Class clazz, Object instance, String fieldname, Object target) {
+        try {
+            Field f = clazz.getDeclaredField(fieldname);
+            f.setAccessible(true);
+            if (Modifier.isFinal(f.getModifiers())) {
+                Field modifiers = Field.class.getDeclaredField("modifiers");
+                modifiers.setAccessible(true);
+                modifiers.setInt(f, f.getModifiers() & ~Modifier.FINAL);
+            }
+            f.set(instance, target);
+        } catch (Exception ex) {
+        }
+    }
 
     public static <T> T getField(Class clazz, Object instance, String fieldname) {
         try {
